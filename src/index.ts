@@ -45,8 +45,8 @@ export function ipv4ToLong(ip: string): number {
 
 /** 加载数据库 */
 export function loadDatabase() {
-    // noinspection DuplicatedCode
-    const buffer = fs.readFileSync(path.resolve(__dirname, 'resources/region.bin'))
+    const rootPath = __dirname.substring(0, __dirname.length - 5)
+    const buffer = fs.readFileSync(path.resolve(rootPath, 'resources/region.bin'))
     const length = buffer.readUInt32LE()
     const array = new Array(length)
     for (let i = 0; i != length; ++i) {
