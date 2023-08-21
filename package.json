@@ -1,0 +1,26 @@
+{
+  "name": "ip-china-location",
+  "version": "1.0.1",
+  "main": "dist/index.js",
+  "typings": "types/index.d.ts",
+  "description": "通过 IPv4 地址获取用户的地理位置信息，精确到省。",
+  "author": "kmar",
+  "license": "AGPL-3.0",
+  "files": ["dist", "types", "resources"],
+  "scripts": {
+    "prepublishOnly": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.0",
+    "@vercel/node": "^2.15.10",
+    "typescript": "^5.1.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/EmptyDreams/ip-china-location.git"
+  },
+  "homepage": "https://github.com/EmptyDreams/ip-china-location",
+  "keywords": [
+    "China", "IPv4", "ip", "中国", "省份", "ip-location", "ip-address", "province", "ipaddress-to-address", "ip-search"
+  ]
+}
