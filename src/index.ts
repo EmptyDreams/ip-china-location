@@ -5,7 +5,7 @@ import * as path from 'path'
 let database: IpLocationData[]
 
 /** 查询指定 IP 的地址（仅支持国内） */
-export function findIPv4(ip: string): string {
+export function findIPv4(ip: string): string | undefined {
     if (!database) loadDatabase()
     const dist = ipv4ToLong(ip)
     let left = 0, right = database.length - 1
@@ -16,21 +16,21 @@ export function findIPv4(ip: string): string {
         else if (item.start > dist) right = mid - 1
         else return item.loc
     } while (left <= right)
-    return 'unknown'
+    return undefined
 }
 
 /** 在 Vercel 上查找 IP 的地址（仅支持国内，优先使用 Vercel 定位） */
-export function findOnVercel(request: VercelRequest): string {
+export function findOnVercel(request: VercelRequest): string | undefined {
     const headers = request.headers
     const country = headers['x-vercel-ip-country'] as string
     if (country != 'CN')
-        return vercelMap[country] ?? 'unknown'
+        return vercelMap[country]
     const prov = headers['x-vercel-ip-country-region']
     if (prov) return iso2strMap[prov as string]
     const value = request.headers['x-real-ip']
-    if (!value) return 'unknown'
+    if (!value) return '中国'
     const ip = typeof value === 'string' ? value : value[0]
-    if (ip.includes(':')) return 'unknown'
+    if (ip.includes(':')) return '中国'
     return findIPv4(ip)
 }
 
