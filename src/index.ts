@@ -22,9 +22,9 @@ export function findIPv4(ip: string): string {
 /** 在 Vercel 上查找 IP 的地址（仅支持国内，优先使用 Vercel 定位） */
 export function findOnVercel(request: VercelRequest): string {
     const headers = request.headers
-    const country = headers['x-vercel-ip-country']
+    const country = headers['x-vercel-ip-country'] as string
     if (country != 'CN')
-        return country == 'TW' ? '台湾' : 'unknown'
+        return country == 'TW' ? '台湾' : country
     const prov = headers['x-vercel-ip-country-region']
     if (prov) return iso2strMap[prov as string]
     const value = request.headers['x-real-ip']
