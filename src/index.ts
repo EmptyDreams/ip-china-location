@@ -5,8 +5,8 @@ import * as path from 'path'
 let database: IpLocationData[]
 
 /** 查询指定 IP 的地址（仅支持国内） */
-export function findIPv4(ip: string): string | undefined {
-    if (!database) loadDatabase()
+export function findIPv4(ip: string, databasePath?: string): string | undefined {
+    if (!database) loadDatabase(databasePath)
     const dist = ipv4ToLong(ip)
     let left = 0, right = database.length - 1
     do {
@@ -20,7 +20,7 @@ export function findIPv4(ip: string): string | undefined {
 }
 
 /** 在 Vercel 上查找 IP 的地址（仅支持国内，优先使用 Vercel 定位） */
-export function findOnVercel(request: VercelRequest): string | undefined {
+export function findOnVercel(request: VercelRequest, databasePath: string): string | undefined {
     const headers = request.headers
     const country = headers['x-vercel-ip-country'] as string
     if (country != 'CN')
@@ -31,7 +31,7 @@ export function findOnVercel(request: VercelRequest): string | undefined {
     if (!value) return '中国'
     const ip = typeof value === 'string' ? value : value[0]
     if (ip.includes(':')) return '中国'
-    return findIPv4(ip)
+    return findIPv4(ip, databasePath)
 }
 
 /** 将字符串形式的 IPv4 地址转换为整数 */
@@ -44,9 +44,12 @@ export function ipv4ToLong(ip: string): number {
 }
 
 /** 加载数据库 */
-export function loadDatabase() {
-    const rootPath = __dirname.substring(0, __dirname.length - 5)
-    const buffer = fs.readFileSync(path.resolve(rootPath, 'resources/region.bin'))
+export function loadDatabase(databasePath?: string) {
+    if (!databasePath) {
+        const rootPath = __dirname.substring(0, __dirname.length - 5)
+        databasePath = path.resolve(rootPath, 'resources/region.bin')
+    }
+    const buffer = fs.readFileSync(databasePath)
     const length = buffer.readUInt32LE()
     const array = new Array(length)
     for (let i = 0; i != length; ++i) {

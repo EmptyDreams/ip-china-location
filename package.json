@@ -1,6 +1,6 @@
 {
   "name": "ip-china-location",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "dist/index.js",
   "typings": "types/index.d.ts",
   "description": "通过 IPv4 地址获取用户的地理位置信息，精确到省。",
