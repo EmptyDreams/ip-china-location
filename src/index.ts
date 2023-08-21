@@ -1,6 +1,5 @@
 import fs from 'fs'
 import {VercelRequest} from '@vercel/node'
-import * as module from 'module'
 import * as path from 'path'
 
 let database: IpLocationData[]
