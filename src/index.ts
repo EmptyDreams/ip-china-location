@@ -1,5 +1,7 @@
 import fs from 'fs'
 import {VercelRequest} from '@vercel/node'
+import * as module from 'module'
+import * as path from 'path'
 
 let database: IpLocationData[]
 
@@ -45,7 +47,7 @@ export function ipv4ToLong(ip: string): number {
 /** 加载数据库 */
 export function loadDatabase() {
     // noinspection DuplicatedCode
-    const buffer = fs.readFileSync('D:/Desktop/region.bin')
+    const buffer = fs.readFileSync(path.resolve(__dirname, 'resources/region.bin'))
     const length = buffer.readUInt32LE()
     const array = new Array(length)
     for (let i = 0; i != length; ++i) {
