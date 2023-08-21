@@ -24,7 +24,7 @@ export function findOnVercel(request: VercelRequest): string {
     const headers = request.headers
     const country = headers['x-vercel-ip-country'] as string
     if (country != 'CN')
-        return country == 'TW' ? '台湾' : country
+        return vercelMap[country] ?? 'unknown'
     const prov = headers['x-vercel-ip-country-region']
     if (prov) return iso2strMap[prov as string]
     const value = request.headers['x-real-ip']
@@ -78,6 +78,10 @@ const iso2strMap: {[propName: string]: string} = {
     SX: '山西', SN: '陕西', SH: '上海', SC: '四川', TJ: '天津',
     XZ: '西藏', XJ: '新疆', YN: '云南', ZJ: '浙江', CQ: '重庆',
     MO: '澳门', HK: '香港', TW: '台湾', HE: '河北'
+}
+
+const vercelMap: {[propName: string]: string} = {
+    HK: '香港', TW: '台湾'
 }
 
 interface IpLocationData {
