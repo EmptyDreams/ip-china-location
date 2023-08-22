@@ -19,6 +19,7 @@ export function findIPv4(ip: string, databasePath?: string): string | undefined 
     return undefined
 }
 
+// noinspection JSUnusedGlobalSymbols
 /** 在 Vercel 上查找 IP 的地址（仅支持国内，优先使用 Vercel 定位） */
 export function findOnVercel(request: VercelRequest, databasePath: string): string | undefined {
     const headers = request.headers
@@ -45,32 +46,31 @@ export function ipv4ToLong(ip: string): number {
 
 /** 加载数据库 */
 export function loadDatabase(databasePath?: string) {
+    if (database) return
+    const provList = [
+        '中国', '江西', '辽宁', '安徽', '北京', '福建', '甘肃', '广东', '广西', '贵州', '海南',
+        '河南', '河北', '黑龙江', '湖北', '湖南', '吉林','江苏', '内蒙古', '宁夏', '青海', '山东',
+        '山西', '陕西', '上海', '四川', '天津', '西藏', '新疆', '云南', '浙江', '重庆', '澳门',
+        '香港', '台湾'
+    ]
     if (!databasePath) {
         const rootPath = __dirname.substring(0, __dirname.length - 5)
         databasePath = path.resolve(rootPath, 'resources/region.bin')
     }
     const buffer = fs.readFileSync(databasePath)
-    const length = buffer.readUInt32LE()
-    const array = new Array(length)
+    const length = buffer.readUInt16LE()
+    const array = new Array<IpLocationData>(length)
     for (let i = 0; i != length; ++i) {
-        const pos = 10 * i + 4
+        const pos = 6 * i + 2
+        const start = buffer.readUInt32LE(pos)
+        const mask = buffer.readUint8(pos + 4)
+        const loc = buffer.readUint8(pos + 5)
+        const end = start | ((1 << mask) - 1)
         array[i] = {
-            start: buffer.readUInt32LE(pos),
-            end: buffer.readUInt32LE(pos + 4),
-            loc: num2strMap[buffer.readUInt16LE(pos + 8)]
+            start, end: end >>> 0, loc: provList[loc]
         }
     }
     database = array
-}
-
-const num2strMap: {[propName: number]: string} = {
-    19014: '福建', 17479: '广东', 17736: '河北', 19010: '北京', 19530: '吉林',
-    20044: '辽宁', 19790: '内蒙古', 19272: '香港', 22356: '台湾', 20035: '中国',
-    23111: '贵州', 22606: '宁夏', 21322: '江苏', 18497: '安徽', 17491: '山东',
-    19528: '黑龙江', 22611: '山西', 20051: '陕西', 18515: '上海', 22599: '广西',
-    16712: '河南', 20301: '澳门', 19034: '浙江', 17235: '四川', 20803: '重庆',
-    20057: '云南', 20040: '湖南', 22602: '江西', 19028: '天津', 16968: '湖北',
-    23128: '西藏', 21319: '甘肃', 18760: '海南', 19032: '新疆', 18513: '青海'
 }
 
 const iso2strMap: {[propName: string]: string} = {
