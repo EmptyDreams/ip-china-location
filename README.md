@@ -7,3 +7,5 @@
 ## 快速开始
 
 使用 `findIPv4` 即可查找指定 IP 的定位，使用 `findOnVercel` 可通过 Vercel 的请求头获取定位信息。
+
+目前 Vercel 平台不支持自动加载数据库，调用 `findOnVercel` 和 `loadDatabase` 时需要手动传入路径。
