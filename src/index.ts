@@ -21,16 +21,18 @@ export function findIPv4(ip: string, databasePath?: string): string | undefined 
 
 // noinspection JSUnusedGlobalSymbols
 /** 在 Vercel 上查找 IP 的地址（仅支持国内，优先使用 Vercel 定位） */
-export function findOnVercel(request: VercelRequest, databasePath: string): string | undefined {
+export function findOnVercel(request: VercelRequest, databasePath: string, ip?: string): string | undefined {
     const headers = request.headers
     const country = headers['x-vercel-ip-country'] as string
     if (country != 'CN')
         return vercelMap[country]
     const prov = headers['x-vercel-ip-country-region']
     if (prov) return iso2strMap[prov as string]
-    const value = request.headers['x-real-ip']
-    if (!value) return '中国'
-    const ip = typeof value === 'string' ? value : value[0]
+    if (!ip) {
+        const value = request.headers['x-real-ip']
+        if (!value) return '中国'
+        ip = typeof value === 'string' ? value : value[0]
+    }
     if (ip.includes(':')) return '中国'
     return findIPv4(ip, databasePath)
 }
@@ -84,7 +86,7 @@ const iso2strMap: {[propName: string]: string} = {
 }
 
 const vercelMap: {[propName: string]: string} = {
-    HK: '香港', TW: '台湾'
+    HK: '香港', TW: '台湾', MO: '澳门'
 }
 
 interface IpLocationData {
